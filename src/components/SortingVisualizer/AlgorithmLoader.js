@@ -50,7 +50,11 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid #e3e3e4',
     borderRadius: 10,
     padding: '1em',
-    minHeight: '7em'
+    minHeight: '7em', 
+    marginTop: '2em'
+  },
+  errorMessage: {
+    color: '#ea4235',
   }
 }));
 
@@ -67,37 +71,54 @@ const AlgorithmLoader = ({ algorithm }) => {
   const [success, setSuccess] = useState(false);
   const [trueTestCount, setTrueTestCount] = useState(0);
   const [falseTestCount, setFalseTestCount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('')
 
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
   });
 
   const handleButtonClick = () => {
+    if (!algorithm) {
+      setErrorMessage('Please choose an algorithm to test first.')
+      return
+    }
     if (!loading) {
       setSuccess(false);
       setLoading(true);
       const sortingAlgorithm = ALGORITHM_MAP[algorithm]
-      const [falseCount, trueCount] = AlgoStressTest(sortingAlgorithm, 100)
-      setTrueTestCount(trueCount)
-      setFalseTestCount(falseCount)
-      if (trueCount === 100) {
-        setSuccess(true)
-        setLoading(false)
-      } else {
-        setLoading(false)
-      }
+      setTimeout(() => {
+        const [falseCount, trueCount] = AlgoStressTest(sortingAlgorithm, 100)
+        setTrueTestCount(trueCount)
+        setFalseTestCount(falseCount)
+        if (trueCount === 100) {
+          setSuccess(true)
+          setLoading(false)
+          setTimeout(() => {
+            setTrueTestCount(0)
+            setFalseTestCount(0)
+            setSuccess(false)
+          }, 3000)
+        } else {
+          setLoading(false)
+          setTimeout(() => {
+            setTrueTestCount(0)
+            setFalseTestCount(0)
+          }, 3000)
+        }
+      }, 1000)
     }
   };
 
   return (
     <React.Fragment>
+    <div className={classes.errorMessage} style={errorMessage.length > 0 ? { display: 'block' } : { display: 'none'}}>{errorMessage}</div>
     <div className={classes.root}>
       <div className={classes.wrapper}>
         <Fab
           aria-label="save"
           className={buttonClassname}
           onClick={handleButtonClick}
-          style={{ backgroundColor: 'turquoise', boxShadow: 'none' }}
+          style={{ backgroundColor: '#001b32', boxShadow: 'none', color: 'white', marginRight: '1em' }}
         >
           {success ? <CheckIcon /> :'Go'}
         </Fab>
@@ -109,7 +130,6 @@ const AlgorithmLoader = ({ algorithm }) => {
       <span>Number of tests: 100</span>
       <span>Success: {trueTestCount}</span>
       <span>Failed: {falseTestCount}</span>
-      {/* <span>Compared against Array.sort()</span> */}
     </div>
     </React.Fragment>
   );

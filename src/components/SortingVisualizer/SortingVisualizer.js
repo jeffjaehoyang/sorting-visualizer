@@ -11,11 +11,12 @@ import { getInsertionSortAnimations, insertionSort } from '../Algorithms/Inserti
 import { getSelectionSortAnimations, selectionSort } from '../Algorithms/SelectionSort';
 import { AlgoStressTest } from '../Algorithms/AlgoStressTest';
 import TestInterface from './TestInterface';
+import AnimationSpeedSlider from './AnimationSpeedSlider';
 import {
   PRIMARY_COLOR,
   SECONDARY_COLOR,
   COMPLETED_COLOR,
-  SORTING_SPEED_MS
+  sortingSpeed
 } from '../../Configs';
 import {
   PlainButton,
@@ -39,21 +40,18 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex', 
     justifyContent: 'space-around',
     alignItems: 'center',
-    // marginLeft: 'auto',
-    // marginRight: 'auto',
     marginRight: '1em',
-    // marginTop: '1em',
-    padding: '1em'
+    padding: '0.5em'
   },
   dataContainer: {
     justifyContent: 'center',
   },
   dataBar: {
-    backgroundColor: '#c5e1a4',
+    backgroundColor: '#d6eabf',
     marginRight: '2px',
     maxHeight: '80vh',
     display: 'inline-block',
-    width: '3px'
+    width: '5px'
   },
   controllerBtn: {
     display: 'flex',
@@ -67,9 +65,10 @@ const useStyles = makeStyles((theme) => ({
 const SortingVisualizer = () => {
   const styles = useStyles()
   const [currentArray, setCurrentArray] = useState([])
-  const [arrayDensity, setArrayDensity] = useState(175)
+  const [arrayDensity, setArrayDensity] = useState(150)
   const [runningTime, setRunningTime] = useState(0)
   const [currentAlgo, setCurrentAlgo] = useState('Not Selected')
+  const [sortingSpeed, setSortingSpeed] = useState(3)
   const [disableControlBtns, setDisableControlBtns] = useState(false)
   
   useEffect(() => {
@@ -103,7 +102,7 @@ const SortingVisualizer = () => {
             setTimeout(() => {
               barOneStyle.backgroundColor = updatedColor;
               inPlace ? barTwoStyle.backgroundColor = COMPLETED_COLOR : barTwoStyle.backgroundColor = updatedColor;
-            }, i * SORTING_SPEED_MS);
+            }, i * sortingSpeed);
         }
         else { // change dataBar's height
             const [barIndex, newHeight] = animations[i];
@@ -111,10 +110,10 @@ const SortingVisualizer = () => {
             const barStyle = dataBars[barIndex].style;
             setTimeout(() => {
                 barStyle.height = `${newHeight}px`;
-            }, i * SORTING_SPEED_MS);  
+            }, i * sortingSpeed);  
         }
     }
-    const completionTime = parseInt(SORTING_SPEED_MS*animations.length + 1000);
+    const completionTime = parseInt(sortingSpeed*animations.length + 1000);
     setTimeout(() => {
       setDisableControlBtns(prev => !prev)
     }, completionTime)
@@ -136,7 +135,7 @@ const SortingVisualizer = () => {
             setTimeout(() => {
               barOneStyle.backgroundColor = updatedColor;
               barTwoStyle.backgroundColor = updatedColor;
-            }, i * SORTING_SPEED_MS);
+            }, i * sortingSpeed);
         }
         else { // change dataBar's height
             const [message, barIndex, newHeight] = animations[i];
@@ -144,10 +143,10 @@ const SortingVisualizer = () => {
             const barStyle = dataBars[barIndex].style;
             setTimeout(() => {
                 barStyle.height = `${newHeight}px`;
-            }, i * SORTING_SPEED_MS);  
+            }, i * sortingSpeed);  
         }
     }
-    const completionTime = parseInt(SORTING_SPEED_MS*animations.length);
+    const completionTime = parseInt(sortingSpeed*animations.length);
     setTimeout(() => {
       const dataBars = document.querySelectorAll('#dataBar');
       dataBars.forEach(item => {
@@ -170,22 +169,22 @@ const SortingVisualizer = () => {
           const barOneStyle = dataBars[indexOne].style;
           setTimeout(() => {
             barOneStyle.backgroundColor = updatedColor;
-          }, i * SORTING_SPEED_MS);
+          }, i * sortingSpeed);
         } else if (message === 'sorted') {
           const [message, indexOne] = animations[i];
           const barOneStyle = dataBars[indexOne].style;
           setTimeout(() => {
             barOneStyle.backgroundColor = COMPLETED_COLOR;
-          }, i * SORTING_SPEED_MS);
+          }, i * sortingSpeed);
         } else { // change dataBar's height
           const [message, barIndex, newHeight] = animations[i];
           const barStyle = dataBars[barIndex].style;
           setTimeout(() => {
               barStyle.height = `${newHeight}px`;
-          }, i * SORTING_SPEED_MS);  
+          }, i * sortingSpeed);  
         }
     }
-    const completionTime = parseInt(SORTING_SPEED_MS*animations.length);
+    const completionTime = parseInt(sortingSpeed*animations.length);
     setTimeout(() => {
       const dataBars = document.querySelectorAll('#dataBar');
       dataBars.forEach(item => {
@@ -210,7 +209,7 @@ const SortingVisualizer = () => {
             setTimeout(() => {
                 barOneStyle.backgroundColor = color;
                 barTwoStyle.backgroundColor = color;
-            },i * SORTING_SPEED_MS);
+            },i * sortingSpeed);
             
         }
         else {
@@ -218,10 +217,10 @@ const SortingVisualizer = () => {
                 const [barOneIdx, newHeight] = animations[i];
                 const barOneStyle = dataBars[barOneIdx].style;
                 barOneStyle.height = `${newHeight}px`;
-              },i * SORTING_SPEED_MS);
+              },i * sortingSpeed);
         }
     }
-    const completionTime = parseInt(SORTING_SPEED_MS*animations.length/2 + 2500);
+    const completionTime = parseInt(sortingSpeed*animations.length);
     setTimeout(() => {
       const dataBars = document.querySelectorAll('#dataBar');
       dataBars.forEach(item => {
@@ -239,7 +238,8 @@ const SortingVisualizer = () => {
           <Grid item className={styles.dataBox} xs={12} md={6}>
             <span>Dataset size: {currentArray.length}</span>
             <span>Sorting Algorithm: {currentAlgo}</span>
-            <span>Time: {runningTime} secs</span>
+            Animation Speed: <AnimationSpeedSlider sortingSpeed={sortingSpeed} setSortingSpeed={setSortingSpeed}/>
+            {/* <span>Time: {runningTime} secs</span> */}
           </Grid>
           <TestInterface />
         </div>
