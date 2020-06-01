@@ -21,7 +21,11 @@ const useStyles = makeStyles((theme) => ({
   farRight: {
     marginLeft: 'auto',
     paddingRight: 0
-  }
+  },
+  appBar: {
+    backgroundColor: "#001b32",
+    display: 'flex',
+  },
 }));
 
 const NavBar = () => {
@@ -29,13 +33,13 @@ const NavBar = () => {
 
   return (
     <div className={styles.root}>
-      <AppBar position="static" elevation={0}>
-        <Toolbar>
+      <AppBar className={styles.appBar} position="static" elevation={0}>
+        <Toolbar variant="dense">
           <Typography variant="h6" className={styles.title}>
             Sorting Algorithm Visualizer
           </Typography>
-          <IconButton className={styles.farRight} color="inherit" aria-label="link-to-github">
-            <GitHubIcon />
+          <IconButton className={styles.farRight} color="inherit" aria-label="link-to-github" disableRipple>
+            <a href="https://github.com/jeffjaehoyang/sorting-visualizer" style={{ color: 'inherit' }}><GitHubIcon /></a>
           </IconButton>
         </Toolbar> 
       </AppBar>

@@ -5,8 +5,23 @@ import {
   Button,
 }from '@material-ui/core'
 import NavBar from '../NavBar/NavBar';
-import {getBubbleSortAnimations} from '../../BubbleSort';
-// import {bubbleSort} from '../../BubbleSort';
+import { getBubbleSortAnimations, bubbleSort } from '../Algorithms/BubbleSort';
+import { getMergeSortAnimations, mergeSort } from '../Algorithms/MergeSort';
+import { getInsertionSortAnimations, insertionSort } from '../Algorithms/InsertionSort';
+import { getSelectionSortAnimations, selectionSort } from '../Algorithms/SelectionSort';
+import { AlgoStressTest } from '../Algorithms/AlgoStressTest';
+import {
+  PRIMARY_COLOR,
+  SECONDARY_COLOR,
+  COMPLETED_COLOR,
+  SORTING_SPEED_MS
+} from '../../Configs';
+import {
+  PlainButton,
+  SlowButton, 
+  FastButton,
+  VeryFastButton,
+} from '../../CustomButtons';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -16,120 +31,247 @@ const useStyles = makeStyles((theme) => ({
     height: '75vh',
   },
   dataBox: {
-    width: '50%',
     minHeight: '2.5em',
-    border: '1px solid black',
+    border: '1px solid #e3e3e4',
+    borderRadius: 10,
     display: 'flex', 
     justifyContent: 'space-around',
     alignItems: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
     marginTop: '1em',
-    padding: '1em'
+    padding: '2em'
   },
   dataContainer: {
-    display: 'flex', 
     justifyContent: 'center',
   },
   dataBar: {
     backgroundColor: '#c5e1a4',
-    margin: '0 1px',
+    marginRight: '2px',
     maxHeight: '80vh',
     display: 'inline-block',
+    width: '3px'
   },
   controllerBtn: {
-    position: 'absolute',
-    bottom: '1em',
-    right: '1em'
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 'auto', 
+    marginRight: 'auto'
   }
 }))
-
-const PRIMARY_COLOR = '#c5e1a4'; //Normal color of bars
-const SECONDARY_COLOR = '#e1a4a6'; //Color of bars when they are being compared
-const COMPLETED_COLOR = '#c1a4e1';
-const ANIMATION_SPEED_MS = 1; //Animation Speed (how fast color changes, how fast height gets overwritten)
 
 const SortingVisualizer = () => {
   const styles = useStyles()
   const [currentArray, setCurrentArray] = useState([])
-  const [arrayDensity, setArrayDensity] = useState(150)
+  const [arrayDensity, setArrayDensity] = useState(200)
   const [runningTime, setRunningTime] = useState(0)
-  const [arrayAccess, setArrayAccess] = useState(0)
+  const [currentAlgo, setCurrentAlgo] = useState('Not Selected')
   const [disableControlBtns, setDisableControlBtns] = useState(false)
   
   useEffect(() => {
     const randomArray = Array(arrayDensity).fill().map(() => Math.round(Math.random() * 500))
     setCurrentArray(randomArray)
     setArrayDensity(randomArray.length)
+    // console.log(AlgoStressTest(insertionSort, 50))
   }, [])
 
   const handleReset = () => {
     setCurrentArray(Array(arrayDensity).fill().map(() => Math.round(Math.random() * 500)))
-    setArrayAccess(0)
+    setCurrentAlgo('Not Selected')
     const dataBars = document.querySelectorAll('#dataBar')
     dataBars.forEach((dataBar) => {
       dataBar.style.backgroundColor = PRIMARY_COLOR
     })
   }
 
-  const bubbleSort = () => {
+  const startBubbleSort = () => {
+    setCurrentAlgo('Bubble Sort')
     setDisableControlBtns(prev => !prev)
-    const [animations, sortArray] = getBubbleSortAnimations(currentArray);
+    const [animations, sortedArray] = getBubbleSortAnimations(currentArray);
     for (let i = 0; i < animations.length; i++) {
-        const isColorChange = (i % 4 === 0) || (i % 4 === 1);
+        const changeColor = (i % 4 === 0) || (i % 4 === 1);
         const dataBars = document.querySelectorAll('#dataBar');
-        if(isColorChange === true) {
-            const color = (i % 4 === 0) ? SECONDARY_COLOR : PRIMARY_COLOR;
-            const [barOneIndex, barTwoIndex, inPlace] = animations[i];
-            const barOneStyle = dataBars[barOneIndex].style;
-            const barTwoStyle = dataBars[barTwoIndex].style;
+        if(changeColor) { // change dataBar's color
+            const updatedColor = (i % 4 === 0) ? SECONDARY_COLOR : PRIMARY_COLOR;
+            const [indexOne, indexTwo, inPlace] = animations[i];
+            const barOneStyle = dataBars[indexOne].style;
+            const barTwoStyle = dataBars[indexTwo].style;
             setTimeout(() => {
-              barOneStyle.backgroundColor = color;
-              inPlace ? barTwoStyle.backgroundColor = COMPLETED_COLOR : barTwoStyle.backgroundColor = color;
-              setArrayAccess(prev => prev+1)
-            },i * ANIMATION_SPEED_MS);
+              barOneStyle.backgroundColor = updatedColor;
+              inPlace ? barTwoStyle.backgroundColor = COMPLETED_COLOR : barTwoStyle.backgroundColor = updatedColor;
+            }, i * SORTING_SPEED_MS);
         }
-        else {
+        else { // change dataBar's height
             const [barIndex, newHeight] = animations[i];
-            if (barIndex === -1) {
-                continue;
-            }
+            if (barIndex === null || newHeight === null) continue
             const barStyle = dataBars[barIndex].style;
             setTimeout(() => {
                 barStyle.height = `${newHeight}px`;
-                setArrayAccess(prev => prev+1)
-            },i * ANIMATION_SPEED_MS);  
+            }, i * SORTING_SPEED_MS);  
         }
     }
-    const RESTORE_TIME = parseInt(ANIMATION_SPEED_MS*animations.length/2 + 3000);
+    const completionTime = parseInt(SORTING_SPEED_MS*animations.length + 1000);
     setTimeout(() => {
       setDisableControlBtns(prev => !prev)
-    }, RESTORE_TIME)
-  } 
+    }, completionTime)
+  }
+
+  const startInsertionSort = () => { 
+    setCurrentAlgo('Insertion Sort')
+    setDisableControlBtns(prev => !prev)
+    const [animations, sortedArray] = getInsertionSortAnimations(currentArray);
+    for (let i = 0; i < animations.length; i++) {
+        const message = animations[i][0];
+        const dataBars = document.querySelectorAll('#dataBar');
+        if(message === 'color') { // change dataBar's color
+            const [message, indexOne, indexTwo] = animations[i];
+            const updatedColor = (i % 6 === 0) || (i % 6 === 2) ? SECONDARY_COLOR : PRIMARY_COLOR;
+            if (indexOne === null || indexTwo === null) continue
+            const barOneStyle = dataBars[indexOne].style;
+            const barTwoStyle = dataBars[indexTwo].style;
+            setTimeout(() => {
+              barOneStyle.backgroundColor = updatedColor;
+              barTwoStyle.backgroundColor = updatedColor;
+            }, i * SORTING_SPEED_MS);
+        }
+        else { // change dataBar's height
+            const [message, barIndex, newHeight] = animations[i];
+            if (barIndex === null || newHeight === null) continue
+            const barStyle = dataBars[barIndex].style;
+            setTimeout(() => {
+                barStyle.height = `${newHeight}px`;
+            }, i * SORTING_SPEED_MS);  
+        }
+    }
+    const completionTime = parseInt(SORTING_SPEED_MS*animations.length);
+    setTimeout(() => {
+      const dataBars = document.querySelectorAll('#dataBar');
+      dataBars.forEach(item => {
+        item.style.backgroundColor = COMPLETED_COLOR;
+      })
+      setDisableControlBtns(prev => !prev)
+    }, completionTime)
+  }
+
+  const startSelectionSort = () => { 
+    setCurrentAlgo('Selection Sort')
+    setDisableControlBtns(prev => !prev)
+    const [animations, sortedArray] = getSelectionSortAnimations(currentArray);
+    for (let i = 0; i < animations.length; i++) {
+        const message = animations[i][0];
+        const dataBars = document.querySelectorAll('#dataBar');
+        if (message === 'compare') {
+          const [message, color, indexOne] = animations[i];
+          const updatedColor = color === 'primary' ? PRIMARY_COLOR : SECONDARY_COLOR;
+          const barOneStyle = dataBars[indexOne].style;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = updatedColor;
+          }, i * SORTING_SPEED_MS);
+        } else if (message === 'sorted') {
+          const [message, indexOne] = animations[i];
+          const barOneStyle = dataBars[indexOne].style;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = COMPLETED_COLOR;
+          }, i * SORTING_SPEED_MS);
+        } else { // change dataBar's height
+          const [message, barIndex, newHeight] = animations[i];
+          const barStyle = dataBars[barIndex].style;
+          setTimeout(() => {
+              barStyle.height = `${newHeight}px`;
+          }, i * SORTING_SPEED_MS);  
+        }
+    }
+    const completionTime = parseInt(SORTING_SPEED_MS*animations.length);
+    setTimeout(() => {
+      const dataBars = document.querySelectorAll('#dataBar');
+      dataBars.forEach(item => {
+        item.style.backgroundColor = COMPLETED_COLOR;
+      })
+      setDisableControlBtns(prev => !prev)
+    }, completionTime)
+  }
+
+  const startMergeSort = () => {
+    setCurrentAlgo('Merge Sort')
+    setDisableControlBtns(prev => !prev)
+    const [animations, sortedArray] = getMergeSortAnimations(currentArray);
+    for (let i = 0; i < animations.length; i++) {
+        const changeColor = (i % 3 !== 2);
+        const dataBars = document.querySelectorAll('#dataBar');
+        if(changeColor === true) {
+            const [indexOne, indexTwo] = animations[i];
+            const color = (i % 3 === 0) ? SECONDARY_COLOR : PRIMARY_COLOR;
+            const barOneStyle = dataBars[indexOne].style;
+            const barTwoStyle = dataBars[indexTwo].style;
+            setTimeout(() => {
+                barOneStyle.backgroundColor = color;
+                barTwoStyle.backgroundColor = color;
+            },i * SORTING_SPEED_MS);
+            
+        }
+        else {
+            setTimeout(() => {
+                const [barOneIdx, newHeight] = animations[i];
+                const barOneStyle = dataBars[barOneIdx].style;
+                barOneStyle.height = `${newHeight}px`;
+              },i * SORTING_SPEED_MS);
+        }
+    }
+    const completionTime = parseInt(SORTING_SPEED_MS*animations.length/2 + 2500);
+    setTimeout(() => {
+      const dataBars = document.querySelectorAll('#dataBar');
+      dataBars.forEach(item => {
+        item.style.backgroundColor = COMPLETED_COLOR;
+      })
+      setDisableControlBtns(prev => !prev)
+    }, completionTime)
+  }
 
   return (
     <React.Fragment>
       <NavBar />
-      <div className={styles.dataBox}>
+      <Grid item className={styles.dataBox} xs={12} md={6}>
         <span>Dataset size: {currentArray.length}</span>
-        <span>Array access: {arrayAccess}</span>
+        <span>Sorting Algorithm: {currentAlgo}</span>
         <span>Time: {runningTime} secs</span>
-      </div>
+      </Grid>
       <div className={styles.root}>
-        <Grid container xs={11} md={9} className={styles.dataContainer}>
+        <Grid item xs={11} md={9} className={styles.dataContainer}>
           {currentArray.map((item, index) => {
-            return <div key={index} className={styles.dataBar} id="dataBar" style={{ height: `${item}px`, width: '4px' }} />
+            return <div key={index} className={styles.dataBar} id='dataBar' style={{ height: `${item}px` }} />
           })}
         </Grid>
       </div>
-      <div className={styles.controllerBtn}>
-        <Button onClick={handleReset} id="generateBtn" disabled={disableControlBtns}>
+      <Grid item className={styles.controllerBtn} xs={12}>
+        <PlainButton onClick={handleReset} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
           Generate New Dataset
-        </Button>
-        <Button onClick={bubbleSort} id="bubbleSortBtn" disabled={disableControlBtns}>
+        </PlainButton>
+        <SlowButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
           Bubble Sort
-        </Button>
-      </div>
+        </SlowButton>
+        <SlowButton onClick={startInsertionSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
+          Insertion Sort
+        </SlowButton>
+        <SlowButton onClick={startSelectionSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
+          Selection Sort
+        </SlowButton>
+        <FastButton onClick={startMergeSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
+          Merge Sort
+        </FastButton>
+        <FastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
+          Quick Sort
+        </FastButton>
+        <FastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
+          Heap Sort
+        </FastButton>
+        <VeryFastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
+          Bucket Sort
+        </VeryFastButton>
+        <VeryFastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
+          Radix Sort
+        </VeryFastButton>
+      </Grid>
     </React.Fragment>
   )
 }
