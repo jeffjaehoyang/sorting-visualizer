@@ -10,6 +10,7 @@ import { getMergeSortAnimations, mergeSort } from '../Algorithms/MergeSort';
 import { getInsertionSortAnimations, insertionSort } from '../Algorithms/InsertionSort';
 import { getSelectionSortAnimations, selectionSort } from '../Algorithms/SelectionSort';
 import { AlgoStressTest } from '../Algorithms/AlgoStressTest';
+import TestInterface from './TestInterface';
 import {
   PRIMARY_COLOR,
   SECONDARY_COLOR,
@@ -22,6 +23,8 @@ import {
   FastButton,
   VeryFastButton,
 } from '../../CustomButtons';
+import PlayCircleOutlineIcon from '@material-ui/icons/PlayCircleOutline';
+import SyncIcon from '@material-ui/icons/Sync';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,16 +34,16 @@ const useStyles = makeStyles((theme) => ({
     height: '75vh',
   },
   dataBox: {
-    minHeight: '2.5em',
     border: '1px solid #e3e3e4',
     borderRadius: 10,
     display: 'flex', 
     justifyContent: 'space-around',
     alignItems: 'center',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    marginTop: '1em',
-    padding: '2em'
+    // marginLeft: 'auto',
+    // marginRight: 'auto',
+    marginRight: '1em',
+    // marginTop: '1em',
+    padding: '1em'
   },
   dataContainer: {
     justifyContent: 'center',
@@ -64,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
 const SortingVisualizer = () => {
   const styles = useStyles()
   const [currentArray, setCurrentArray] = useState([])
-  const [arrayDensity, setArrayDensity] = useState(200)
+  const [arrayDensity, setArrayDensity] = useState(175)
   const [runningTime, setRunningTime] = useState(0)
   const [currentAlgo, setCurrentAlgo] = useState('Not Selected')
   const [disableControlBtns, setDisableControlBtns] = useState(false)
@@ -231,47 +234,52 @@ const SortingVisualizer = () => {
   return (
     <React.Fragment>
       <NavBar />
-      <Grid item className={styles.dataBox} xs={12} md={6}>
-        <span>Dataset size: {currentArray.length}</span>
-        <span>Sorting Algorithm: {currentAlgo}</span>
-        <span>Time: {runningTime} secs</span>
-      </Grid>
-      <div className={styles.root}>
-        <Grid item xs={11} md={9} className={styles.dataContainer}>
-          {currentArray.map((item, index) => {
-            return <div key={index} className={styles.dataBar} id='dataBar' style={{ height: `${item}px` }} />
-          })}
+      <div style={{ height: '90vh', padding: '1em' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '1em' }}>
+          <Grid item className={styles.dataBox} xs={12} md={6}>
+            <span>Dataset size: {currentArray.length}</span>
+            <span>Sorting Algorithm: {currentAlgo}</span>
+            <span>Time: {runningTime} secs</span>
+          </Grid>
+          <TestInterface />
+        </div>
+        <div className={styles.root}>
+          <Grid item xs={11} md={9} className={styles.dataContainer}>
+            {currentArray.map((item, index) => {
+              return <div key={index} className={styles.dataBar} id='dataBar' style={{ height: `${item}px` }} />
+            })}
+          </Grid>
+        </div>
+        <Grid item className={styles.controllerBtn} xs={12}>
+          <PlainButton onClick={handleReset} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<SyncIcon />} variant='outlined' size='small'>
+            Generate New Dataset
+          </PlainButton>
+          <SlowButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+            Bubble Sort
+          </SlowButton>
+          <SlowButton onClick={startInsertionSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+            Insertion Sort
+          </SlowButton>
+          <SlowButton onClick={startSelectionSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+            Selection Sort
+          </SlowButton>
+          <FastButton onClick={startMergeSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+            Merge Sort
+          </FastButton>
+          <FastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+            Quick Sort
+          </FastButton>
+          <FastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+            Heap Sort
+          </FastButton>
+          <VeryFastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+            Bucket Sort
+          </VeryFastButton>
+          <VeryFastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+            Radix Sort
+          </VeryFastButton>
         </Grid>
       </div>
-      <Grid item className={styles.controllerBtn} xs={12}>
-        <PlainButton onClick={handleReset} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Generate New Dataset
-        </PlainButton>
-        <SlowButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Bubble Sort
-        </SlowButton>
-        <SlowButton onClick={startInsertionSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Insertion Sort
-        </SlowButton>
-        <SlowButton onClick={startSelectionSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Selection Sort
-        </SlowButton>
-        <FastButton onClick={startMergeSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Merge Sort
-        </FastButton>
-        <FastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Quick Sort
-        </FastButton>
-        <FastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Heap Sort
-        </FastButton>
-        <VeryFastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Bucket Sort
-        </VeryFastButton>
-        <VeryFastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} variant='outlined' size='small'>
-          Radix Sort
-        </VeryFastButton>
-      </Grid>
     </React.Fragment>
   )
 }

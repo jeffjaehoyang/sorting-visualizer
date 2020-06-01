@@ -20,7 +20,9 @@ const useStyles = makeStyles((theme) => ({
   },
   farRight: {
     marginLeft: 'auto',
-    paddingRight: 0
+    paddingRight: 0,
+    alignItems: 'center',
+    display: 'flex'
   },
   appBar: {
     backgroundColor: "#001b32",

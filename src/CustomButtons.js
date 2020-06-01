@@ -52,3 +52,17 @@ export const VeryFastButton = withStyles({
     textTransform: 'capitalize'
   }
 })(Button);
+
+export const TestButton = withStyles({
+  root: {
+    backgroundColor: 'rgba(208, 209, 211, 0.5)',
+    borderRadius: 20,
+    '&:hover': {
+      backgroundColor: 'rgba(208, 209, 211, 0.5)',
+    },
+    height: '3em'
+  },
+  label: {
+    textTransform: 'capitalize'
+  }
+})(Button);
