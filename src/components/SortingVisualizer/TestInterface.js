@@ -47,7 +47,8 @@ const FormDialog = ({ open, algorithm, handleChange, handleClose }) => {
             <MenuItem value={'bubbleSort'}>Bubble Sort</MenuItem>
             <MenuItem value={'insertionSort'}>Insertion Sort</MenuItem>
             <MenuItem value={'selectionSort'}>Selection Sort</MenuItem>
-            {/* <MenuItem value={'mergeSort'}>Merge Sort</MenuItem> */}
+            <MenuItem value={'quickSort'}>Quick Sort</MenuItem>
+            <MenuItem value={'mergeSort'}>Merge Sort</MenuItem>
           </Select>
           <div style={{ minHeight: '25em', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             <AlgorithmLoader algorithm={algorithm}/>

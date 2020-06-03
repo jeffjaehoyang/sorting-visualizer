@@ -11,6 +11,7 @@ import { getBubbleSortAnimations, bubbleSort } from '../Algorithms/BubbleSort';
 import { getMergeSortAnimations, mergeSort } from '../Algorithms/MergeSort';
 import { getInsertionSortAnimations, insertionSort } from '../Algorithms/InsertionSort';
 import { getSelectionSortAnimations, selectionSort } from '../Algorithms/SelectionSort';
+import { getQuickSortAnimations, quickSort } from '../Algorithms/QuickSort';
 import { AlgoStressTest } from '../Algorithms/AlgoStressTest';
 
 const useStyles = makeStyles((theme) => ({
@@ -62,7 +63,8 @@ const ALGORITHM_MAP = {
   'bubbleSort' : bubbleSort, 
   'insertionSort' : insertionSort,
   'selectionSort' : selectionSort,
-  'mergeSort' : mergeSort
+  'mergeSort' : mergeSort, 
+  'quickSort' : quickSort,
 }
 
 const AlgorithmLoader = ({ algorithm }) => {

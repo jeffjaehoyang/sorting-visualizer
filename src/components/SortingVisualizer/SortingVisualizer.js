@@ -5,10 +5,11 @@ import {
   Button,
 }from '@material-ui/core'
 import NavBar from '../NavBar/NavBar';
-import { getBubbleSortAnimations, bubbleSort } from '../Algorithms/BubbleSort';
-import { getMergeSortAnimations, mergeSort } from '../Algorithms/MergeSort';
-import { getInsertionSortAnimations, insertionSort } from '../Algorithms/InsertionSort';
-import { getSelectionSortAnimations, selectionSort } from '../Algorithms/SelectionSort';
+import { getBubbleSortAnimations } from '../Algorithms/BubbleSort';
+import { getMergeSortAnimations } from '../Algorithms/MergeSort';
+import { getInsertionSortAnimations } from '../Algorithms/InsertionSort';
+import { getSelectionSortAnimations } from '../Algorithms/SelectionSort';
+import { getQuickSortAnimations } from '../Algorithms/QuickSort';
 import { AlgoStressTest } from '../Algorithms/AlgoStressTest';
 import TestInterface from './TestInterface';
 import AnimationSpeedSlider from './AnimationSpeedSlider';
@@ -230,6 +231,44 @@ const SortingVisualizer = () => {
     }, completionTime)
   }
 
+  const startQuickSort = () => { 
+    setCurrentAlgo('Quick Sort')
+    setDisableControlBtns(prev => !prev)
+    const [animations, sortedArray] = getQuickSortAnimations(currentArray);
+    for (let i = 0; i < animations.length; i++) {
+        const message = animations[i][0];
+        const dataBars = document.querySelectorAll('#dataBar');
+        if (message === 'pointer') {
+          const [message, color, indexOne] = animations[i];
+          const updatedColor = color === 'primary' ? PRIMARY_COLOR : SECONDARY_COLOR;
+          const barOneStyle = dataBars[indexOne].style;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = updatedColor;
+          }, i * sortingSpeed);
+        } else if (message === 'sorted') {
+          const [message, indexOne] = animations[i];
+          const barOneStyle = dataBars[indexOne].style;
+          setTimeout(() => {
+            barOneStyle.backgroundColor = COMPLETED_COLOR;
+          }, i * sortingSpeed);
+        } else { // change dataBar's height
+          const [message, barIndex, newHeight] = animations[i];
+          const barStyle = dataBars[barIndex].style;
+          setTimeout(() => {
+              barStyle.height = `${newHeight}px`;
+          }, i * sortingSpeed);  
+        }
+    }
+    const completionTime = parseInt(sortingSpeed*animations.length);
+    setTimeout(() => {
+      const dataBars = document.querySelectorAll('#dataBar');
+      dataBars.forEach(item => {
+        item.style.backgroundColor = COMPLETED_COLOR;
+      })
+      setDisableControlBtns(prev => !prev)
+    }, completionTime)
+  }
+
   return (
     <React.Fragment>
       <NavBar />
@@ -266,7 +305,7 @@ const SortingVisualizer = () => {
           <FastButton onClick={startMergeSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
             Merge Sort
           </FastButton>
-          <FastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
+          <FastButton onClick={startQuickSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>
             Quick Sort
           </FastButton>
           <FastButton onClick={startBubbleSort} disabled={disableControlBtns} style={{ marginRight: '1em' }} startIcon={<PlayCircleOutlineIcon />} variant='outlined' size='small'>

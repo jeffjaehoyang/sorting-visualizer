@@ -1,7 +1,5 @@
-import { bubbleSort } from './BubbleSort';
-import { insertionSort } from './InsertionSort';
-import { selectionSort } from './SelectionSort';
 import { mergeSort } from './MergeSort';
+import { quickSort } from './QuickSort';
 
 export function AlgoStressTest(sortingAlgorithm, testLevel) {
   const NUM_ARRAYS = testLevel;
@@ -13,11 +11,19 @@ export function AlgoStressTest(sortingAlgorithm, testLevel) {
     testArraySet.push(randomTestArray);
   }
   for (let testArray of testArraySet) {
-    if (sortingAlgorithm(testArray, [])[0] !== testArray.sort((a, b) => a - b)) {
-      falseCount++;
+    if(sortingAlgorithm === quickSort || sortingAlgorithm === mergeSort) {
+      if (sortingAlgorithm(testArray, 0, testArray.length-1, [])[0] !== testArray.sort((a, b) => a - b)) {
+        falseCount++;
+      } else {
+        trueCount++;
+      }
     } else {
-      trueCount++;
-    }
+      if (sortingAlgorithm(testArray, [])[0] !== testArray.sort((a, b) => a - b)) {
+        falseCount++;
+      } else {
+        trueCount++;
+      }
+    } 
   }
   return [falseCount, trueCount]
 }

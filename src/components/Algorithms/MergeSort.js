@@ -1,9 +1,7 @@
 export function getMergeSortAnimations(array) {
-  let animations  = [];
   let currentArray = array.slice();
-  mergeSort(currentArray, 0, currentArray.length - 1, animations);
-  array = currentArray;
-  return [animations, array];
+  const [sortedArray, animations] = mergeSort(currentArray, 0, currentArray.length - 1, []);
+  return [animations, sortedArray];
 }
 
 export function mergeSort(currentArray, startIndex, endIndex, animations) {
@@ -12,6 +10,7 @@ export function mergeSort(currentArray, startIndex, endIndex, animations) {
   mergeSort(currentArray, startIndex, middleIndex, animations);
   mergeSort(currentArray, middleIndex + 1, endIndex, animations);
   merge(currentArray, startIndex, middleIndex, endIndex, animations);
+  return [currentArray, animations]
 }
 
 function merge(currentArray, startIndex, middleIndex, endIndex, animations) {
