@@ -7,12 +7,14 @@ import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import CheckIcon from '@material-ui/icons/Check';
 import SaveIcon from '@material-ui/icons/Save';
-import { getBubbleSortAnimations, bubbleSort } from '../Algorithms/BubbleSort';
-import { getMergeSortAnimations, mergeSort } from '../Algorithms/MergeSort';
-import { getInsertionSortAnimations, insertionSort } from '../Algorithms/InsertionSort';
-import { getSelectionSortAnimations, selectionSort } from '../Algorithms/SelectionSort';
-import { getQuickSortAnimations, quickSort } from '../Algorithms/QuickSort';
+import { bubbleSort } from '../Algorithms/BubbleSort';
+import { mergeSort } from '../Algorithms/MergeSort';
+import { insertionSort } from '../Algorithms/InsertionSort';
+import { selectionSort } from '../Algorithms/SelectionSort';
+import { quickSort } from '../Algorithms/QuickSort';
+import { heapSort } from '../Algorithms/HeapSort';
 import { AlgoStressTest } from '../Algorithms/AlgoStressTest';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,6 +67,7 @@ const ALGORITHM_MAP = {
   'selectionSort' : selectionSort,
   'mergeSort' : mergeSort, 
   'quickSort' : quickSort,
+  'heapSort' : heapSort,
 }
 
 const AlgorithmLoader = ({ algorithm }) => {
@@ -73,8 +76,9 @@ const AlgorithmLoader = ({ algorithm }) => {
   const [success, setSuccess] = useState(false);
   const [trueTestCount, setTrueTestCount] = useState(0);
   const [falseTestCount, setFalseTestCount] = useState(0);
-  const [errorMessage, setErrorMessage] = useState('')
-
+  const [executionTime, setExecutionTime] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
+  
   const buttonClassname = clsx({
     [classes.buttonSuccess]: success,
   });
@@ -89,17 +93,19 @@ const AlgorithmLoader = ({ algorithm }) => {
       setLoading(true);
       const sortingAlgorithm = ALGORITHM_MAP[algorithm]
       setTimeout(() => {
-        const [falseCount, trueCount] = AlgoStressTest(sortingAlgorithm, 100)
+        const [falseCount, trueCount, runTime] = AlgoStressTest(sortingAlgorithm, 250)
+        setExecutionTime(runTime)
         setTrueTestCount(trueCount)
         setFalseTestCount(falseCount)
-        if (trueCount === 100) {
+        if (trueCount === 250) {
           setSuccess(true)
           setLoading(false)
           setTimeout(() => {
             setTrueTestCount(0)
             setFalseTestCount(0)
+            setExecutionTime(0)
             setSuccess(false)
-          }, 3000)
+          }, 3500)
         } else {
           setLoading(false)
           setTimeout(() => {
@@ -107,7 +113,7 @@ const AlgorithmLoader = ({ algorithm }) => {
             setFalseTestCount(0)
           }, 3000)
         }
-      }, 1000)
+      }, 500)
     }
   };
 
@@ -122,14 +128,14 @@ const AlgorithmLoader = ({ algorithm }) => {
           onClick={handleButtonClick}
           style={{ backgroundColor: '#001b32', boxShadow: 'none', color: 'white', marginRight: '1em' }}
         >
-          {success ? <CheckIcon /> :'Go'}
+          {loading? <DescriptionIcon /> : (success ? <CheckIcon /> :'Test')}
         </Fab>
         {loading && <CircularProgress size={68} className={classes.fabProgress} />}
       </div>
-      { loading ? 'Testing ...': (success ? 'All tests passed!' : '100 random arrays generated. Ready to test.') }
+      { loading ? 'Testing ...': (success ? 'All tests passed!' : '250 random arrays generated. Ready to test.') }
     </div>
     <div className={classes.testResultData}>
-      <span>Number of tests: 100</span>
+      <span>Ran {trueTestCount+falseTestCount} tests in {executionTime} ms</span>
       <span>Success: {trueTestCount}</span>
       <span>Failed: {falseTestCount}</span>
     </div>
